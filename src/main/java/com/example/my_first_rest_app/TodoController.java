@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 
 
 @RestController
@@ -17,19 +18,72 @@ public class TodoController {
 
     @GetMapping("/todo")
     public ResponseEntity<Todo> get(@RequestParam(value = "id") int id) {
+        // get todo from db by id
+        Optional<Todo> todoInDb = todoRepository.findById(id);
 
-        Todo newTodo = new Todo();
-        newTodo.setId(id);
-        newTodo.setDescription("Einkaufen gehen");
-        newTodo.setIsDone(true);
+        if(todoInDb.isPresent()) {
+            return new ResponseEntity<Todo>(todoInDb.get(), HttpStatus.OK);
+        }
 
-        return new ResponseEntity<Todo>(newTodo, HttpStatus.OK);
+        return new ResponseEntity("No todo found with id " + id, HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/todo/all")
+    public ResponseEntity<Iterable<Todo>> getAll() {
+        Iterable<Todo> allTodosInDb = todoRepository.findAll();
+        return new ResponseEntity<Iterable<Todo>>(allTodosInDb, HttpStatus.OK);
     }
 
     @PostMapping("/todo")
     public ResponseEntity<Todo> create(@RequestBody Todo newTodo) {
         // save todo in db
         todoRepository.save(newTodo);
-        return new ResponseEntity<Todo>(newTodo, HttpStatus.OK);
+        return new ResponseEntity<Todo>(newTodo, HttpStatus.CREATED);
     }
+
+    @DeleteMapping("/todo")
+    public ResponseEntity delete(@RequestParam(value = "id") int id) {
+
+        Optional<Todo> todoInDb = todoRepository.findById(id);
+
+        if(todoInDb.isPresent()) {
+            todoRepository.deleteById(id);
+            return new ResponseEntity("Todo deleted", HttpStatus.GONE);
+        }
+
+        return new ResponseEntity("No todo to delete found with id " + id, HttpStatus.NOT_FOUND);
+    }
+
+    @PutMapping("/todo")
+    public ResponseEntity<Todo> edit(@RequestBody Todo editedTodo) {
+
+        Optional<Todo> todoInDb = todoRepository.findById(editedTodo.getId());
+
+        if(todoInDb.isPresent()) {
+            //update
+            Todo savedTodo = todoRepository.save(editedTodo);
+            return new ResponseEntity<Todo>(savedTodo, HttpStatus.OK);
+        }
+
+        return new ResponseEntity("No todo to edit found with id " + editedTodo.getId(), HttpStatus.NOT_FOUND);
+    }
+
+    @PatchMapping("/todo/setDone")
+    public ResponseEntity<Todo> setDone(@RequestParam(value = "isDone") boolean isDone,
+                                        @RequestParam(value = "id") int id) {
+
+        Optional<Todo> todoInDb = todoRepository.findById(id);
+
+        if(todoInDb.isPresent()) {
+            //update isDone
+            todoInDb.get().setIsDone(isDone);
+            Todo savedTodo = todoRepository.save(todoInDb.get());
+            return new ResponseEntity<Todo>(savedTodo, HttpStatus.OK);
+        }
+
+        return new ResponseEntity("No todo to update with id found " + id, HttpStatus.NOT_FOUND);
+    }
+
+
+
 }

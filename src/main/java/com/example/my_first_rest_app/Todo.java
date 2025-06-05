@@ -10,7 +10,7 @@ public class Todo {
 
     //Integer id wird zu Primary key und wird automatisch generiert
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String description;
