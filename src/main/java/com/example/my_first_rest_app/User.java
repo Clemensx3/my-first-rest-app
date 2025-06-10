@@ -17,6 +17,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @JsonIgnore
+    private String secret;
+
     @OneToMany
     @JoinColumn(name = "userId")
     private Set<Todo> todos;
@@ -53,5 +56,13 @@ public class User {
 
     public void setTodos(Set<Todo> todos) {
         this.todos = todos;
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 }
