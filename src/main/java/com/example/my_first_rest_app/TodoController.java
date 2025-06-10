@@ -84,6 +84,4 @@ public class TodoController {
         return new ResponseEntity("No todo to update with id found " + id, HttpStatus.NOT_FOUND);
     }
 
-
-
 }

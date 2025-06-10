@@ -1,9 +1,6 @@
 package com.example.my_first_rest_app;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Todo {
@@ -15,6 +12,9 @@ public class Todo {
 
     private String description;
     private boolean isDone;
+
+    @Column(nullable = false)
+    private Integer userId;
 
     public void setId(Integer id) {
         this.id = id;
@@ -35,6 +35,13 @@ public class Todo {
     }
     public Boolean getIsDone() {
         return this.isDone;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+    public Integer getUserId() {
+        return userId;
     }
 
 }
